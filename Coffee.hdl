@@ -1,0 +1,49 @@
+CHIP Coffee {
+	IN start, empty, temp, carafe;
+	OUT heat, percolate, addWater, noCarafe;
+	
+	PARTS:
+	DFF(in=nexts2, out=s2);
+	DFF(in=nexts1, out=s1);
+	DFF(in=nexts0, out=s0);
+	
+	//States:
+	//Standby = 000
+	And(a=nots2, b=nots1, out=nots2nots1);
+	And(a=nots2nots1, b=nots0, out=standby);
+	
+	//Heating water = 001
+	And(a=nots2nots1, b=s0, out=heating);
+	
+	//Brewing = 010
+	And(a=nots2, b=s1, out=nots2s1);
+	And(a=nots2s1, b=nots0, out=brewing);
+	
+	//Sneak a cup = 011
+	And(a=nots2s1, b=s0, out=sneak);
+	
+	//Add water = 110
+	And(a=s2, b=s1, out=s2s1);
+	And(a=s2s1, b=nots0, out=add_water, out=addWater);
+	
+	//Not smart = 111
+	And(a=s2s1, b=s0, out=not_smart, out=noCarafe);
+	
+	
+	//Nots:
+	Not(in=start, out=notstart);
+	Not(in=empty, out=notempty);
+	Not(in=temp, out=nottemp);
+	Not(in=carafe, out=notcarafe);
+	Not(in=s2, out=nots2);
+	Not(in=s1, out=nots1);
+	Not(in=s0, out=nots0);
+	
+	//Next-state logic:
+	//Standby logic
+	
+	
+	
+
+
+}
