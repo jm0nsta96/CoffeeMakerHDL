@@ -1,0 +1,90 @@
+//Ben Whipkey
+//Josh Williams
+//3-24-17
+//This is lab5
+
+CHIP LAB5 {
+	IN a, b, c, sign;
+	OUT SegA, SegB, SegC, SegD, SegE, SegF, SegG, SegH;
+
+	PARTS:
+	//Put your code here
+	//NOTS
+	Not(in=a, out=na);
+	Not(in=b, out=nb);
+	Not(in=c, out=nc);
+
+
+	//COMBINATIONS
+	And(a=a, b=b, out=ab);
+	And(a=a, b=c, out=ac);
+	And(a=ab, b=c, out=abc);  //111
+
+	And(a=na, b=b, out=nab);
+	And(a=na, b=c, out=nac);
+	And(a=nab, b=c, out=nabc);  //011
+
+	And(a=a, b=nb, out=anb);
+	And(a=nb, b=c, out=nbc);
+	And(a=anb, b=c, out=anbc);  //101
+
+	And(a=a, b=nc, out=anc);
+	And(a=b, b=nc, out=bnc);
+	And(a=anc, b=b, out=abnc);  //110
+
+	And(a=na, b=nb, out=nanb);
+	And(a=nanb, b=nc, out=nanbnc); //000
+
+	And(a=nb, b=nc, out=nbnc);
+	And(a=a, b=nbnc, out=anbnc); //100
+
+	And(a=nanb, b=c, out=nanbc); //001
+
+	And(a=nab, b=nc, out=nabnc); //010
+
+	//LOGIC
+	//Segment H (sign bit)
+	Not(in=nanbnc, out=notzero);
+	And(a=sign, b=notzero, out=SegH);
+
+	//Segment A
+	//A * ~(B * C) + (~A * ~B * ~C)
+	Not(in=bc, out=notbc);
+	And(a=a, b=notbc, out=anotbc);
+	Or(a=anotbc, b=nanbnc, out=SegA);
+
+	//Segment B
+	//~(nAnBC + AnBnC + ABnC)
+	Or(a=nanbc, b=anbnc, out=nanbc_anbnc);
+	Or(a=nanbc_anbnc, b=abnc, out=nanbc_anbnc_abnc);
+	Not(in=nanbc_anbnc_abnc, out=SegB);
+
+	//Segment C
+	//~(A * C) * ~(A * B) + (A * B * C)
+	Not(in=ac, out=notac);
+	Not(in=ab, out=notab);
+	And(a=notac, b=notab, out=notacnotab);
+	Or(a=notacnotab, b=abc, out=SegC);
+
+	//Segment D
+	//~((~A * ~B * C) + (A * B * C) + (~A * ~B * ~C))
+	Or(a=nanbc, b=abc), out=nanbc_abc);
+	Or(a=nanbc_abc, b=nanbnc, out=nanbc_abc_nanbnc);
+	Not(in=nanbc_abc_nanbnc, out=SegD);
+
+	//Segment E
+	//(~A * B * ~C) + (A * B * ~C) + (~A * ~B * ~C)
+	Or(a=nabnc, b=abnc, out=nabnc_abnc);
+	Or(a=nabnc_abnc, b=nanbnc, out=SegE);
+
+	//Segment F
+	//~(~A * B * ~C)
+	Not(in=nabnc, out=SegF);
+
+	//Segment G
+	//~(ABC + AnBnC + nAnBC)
+	And(a=abc, b=anbnc, out=abc_anbnc);
+	And(a=abc_anbnc, b=nanbc, out=abc_anbnc_nanbc);
+	Not(in=abc_anbnc_nanbc, out=SegG);
+
+}
